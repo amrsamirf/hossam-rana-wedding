@@ -38,11 +38,7 @@ const cardLiftVariants: Variants = {
 
 const envelopeFadeVariants: Variants = {
   closed: { opacity: 1, scale: 1 },
-  opening: {
-    opacity: 0,
-    scale: 0.96,
-    transition: { delay: 1.5, duration: 0.5 },
-  },
+  opening: { opacity: 1, scale: 1 },
   open: { opacity: 0, scale: 0.96 },
 };
 
