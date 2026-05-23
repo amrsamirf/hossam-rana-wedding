@@ -20,7 +20,7 @@ export default function App() {
   // Transition opening -> open after envelope animation finishes
   useEffect(() => {
     if (phase !== "opening") return;
-    const id = setTimeout(() => setPhase("open"), 4700);
+    const id = setTimeout(() => setPhase("open"), 2700);
     return () => clearTimeout(id);
   }, [phase]);
 
