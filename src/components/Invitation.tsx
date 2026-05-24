@@ -65,8 +65,13 @@ export default function Invitation({ wedding, lang }: Props) {
 
   const groom = isAr ? wedding.groomAr : wedding.groom;
   const bride = isAr ? wedding.brideAr : wedding.bride;
-  const dateLabel = isAr ? wedding.dateLabelAr : wedding.dateLabel;
   const timeLabel = isAr ? wedding.timeLabelAr : wedding.timeLabel;
+
+  const DAY_NAMES_EN = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  const DAY_NAMES_AR = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+  const dayName = isAr ? DAY_NAMES_AR[wedding.date.getDay()] : DAY_NAMES_EN[wedding.date.getDay()];
+  const d = wedding.date;
+  const numericDate = `${String(d.getDate()).padStart(2, "0")} · ${String(d.getMonth() + 1).padStart(2, "0")} · ${d.getFullYear()}`;
   const venueName = isAr ? wedding.venueNameAr : wedding.venueName;
   const venueAddress = isAr ? wedding.venueAddressAr : wedding.venueAddress;
 
@@ -169,12 +174,14 @@ export default function Invitation({ wedding, lang }: Props) {
           {isAr ? bride : bride.toUpperCase()}
         </motion.h1>
 
-        <motion.p
-          variants={item}
-          className={`mt-3 text-[10px] sm:text-xs text-ink/85 ${isAr ? "font-arabic" : "font-serif tracking-[0.3em]"}`}
-        >
-          {isAr ? dateLabel : dateLabel.toUpperCase()}
-        </motion.p>
+        <motion.div variants={item} className="mt-4">
+          <p className={`text-[10px] sm:text-xs text-ink/60 tracking-[0.25em] ${isAr ? "font-arabic" : "font-serif"}`}>
+            {dayName}
+          </p>
+          <p className={`mt-1 text-2xl sm:text-3xl text-ink font-serif tracking-[0.12em]`}>
+            {numericDate}
+          </p>
+        </motion.div>
 
         {/* Venue */}
         <motion.div
