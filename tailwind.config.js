@@ -16,6 +16,7 @@ export default {
         serif: ["'Cormorant Garamond'", "Georgia", "serif"],
         script: ["'Great Vibes'", "'Allura'", "cursive"],
         sans: ["'Inter'", "system-ui", "sans-serif"],
+        arabic: ["'Amiri'", "Georgia", "serif"],
       },
       boxShadow: {
         seal: "0 6px 18px rgba(120, 75, 20, 0.45), inset 0 2px 6px rgba(255,255,255,0.25), inset 0 -4px 10px rgba(80,45,10,0.5)",

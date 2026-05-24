@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { translations, type Lang } from "../i18n";
 
-type Props = Readonly<{ target: Date }>;
+type Props = Readonly<{ target: Date; lang: Lang }>;
 
 function diff(target: Date) {
   const ms = target.getTime() - Date.now();
@@ -12,7 +13,9 @@ function diff(target: Date) {
   return { d, h, m, s };
 }
 
-export default function Countdown({ target }: Props) {
+export default function Countdown({ target, lang }: Props) {
+  const tr = translations[lang];
+  const isAr = lang === "ar";
   const [t, setT] = useState(() => diff(target));
 
   useEffect(() => {
@@ -22,15 +25,20 @@ export default function Countdown({ target }: Props) {
 
   if (!t) {
     return (
-      <p className="font-script text-3xl text-gold mt-2">Today&rsquo;s the day!</p>
+      <p
+        className={`text-3xl text-gold mt-2 ${isAr ? "font-arabic" : "font-script"}`}
+        style={isAr ? { fontFamily: "'Amiri', serif", fontStyle: "italic" } : undefined}
+      >
+        {tr.todayIsTheDay}
+      </p>
     );
   }
 
   const items: Array<[number, string]> = [
-    [t.d, "Days"],
-    [t.h, "Hours"],
-    [t.m, "Minutes"],
-    [t.s, "Seconds"],
+    [t.d, tr.days],
+    [t.h, tr.hours],
+    [t.m, tr.minutes],
+    [t.s, tr.seconds],
   ];
 
   return (
@@ -43,7 +51,10 @@ export default function Countdown({ target }: Props) {
           <div className="font-serif text-2xl sm:text-3xl text-ink tabular-nums leading-none">
             {String(value).padStart(2, "0")}
           </div>
-          <div className="mt-1 font-serif tracking-[0.2em] text-[9px] sm:text-[10px] uppercase text-ink/80">
+          <div
+            className={`mt-1 text-[9px] sm:text-[10px] text-ink/80 ${isAr ? "font-arabic" : "font-serif tracking-[0.2em] uppercase"}`}
+            style={isAr ? { fontFamily: "'Amiri', serif" } : undefined}
+          >
             {label}
           </div>
         </div>

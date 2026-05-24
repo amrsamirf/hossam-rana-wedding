@@ -1,11 +1,15 @@
 import { motion, type Variants } from "framer-motion";
 import WaxSeal from "./WaxSeal";
+import type { Lang } from "../i18n";
 
 type Props = Readonly<{
   initials: string;
   hint: string;
   state: "closed" | "opening" | "open";
   onOpen: () => void;
+  lang: Lang;
+  groom: string;
+  bride: string;
 }>;
 
 const flapVariants: Variants = {
@@ -42,7 +46,9 @@ const envelopeFadeVariants: Variants = {
   open: { opacity: 0, scale: 0.96 },
 };
 
-export default function Envelope({ initials, hint, state, onOpen }: Props) {
+export default function Envelope({ initials, hint, state, onOpen, lang, groom, bride }: Props) {
+  const isAr = lang === "ar";
+  const fontStyle = isAr ? { fontFamily: "'Amiri', serif" } : undefined;
   const interactive = state === "closed";
   return (
     <motion.div
@@ -78,9 +84,16 @@ export default function Envelope({ initials, hint, state, onOpen }: Props) {
             className="absolute w-[88%] h-[92%] rounded-[4px] bg-[#FBF6EC] shadow-card border border-[#e8dcc2] flex flex-col items-center justify-center text-ink"
             style={{ top: "4%", left: "6%", zIndex: 1 }}
           >
-            <p className="font-script text-3xl sm:text-4xl text-gold">save the date</p>
-            <p className="mt-2 font-serif tracking-[0.3em] text-xs sm:text-sm text-ink/85">
-              HOSSAM &amp; RANA
+            {isAr ? (
+              <p className="font-arabic text-2xl sm:text-3xl text-gold" style={{ fontStyle: "italic" }}>احتفظوا بالموعد</p>
+            ) : (
+              <p className="font-script text-3xl sm:text-4xl text-gold">save the date</p>
+            )}
+            <p
+              className={`mt-2 text-xs sm:text-sm text-ink/85 ${isAr ? "font-arabic" : "font-serif tracking-[0.3em]"}`}
+              style={fontStyle}
+            >
+              {isAr ? `${groom} & ${bride}` : `${groom.toUpperCase()} & ${bride.toUpperCase()}`}
             </p>
           </motion.div>
 
@@ -145,7 +158,10 @@ export default function Envelope({ initials, hint, state, onOpen }: Props) {
 
       {/* Hint */}
       {interactive && (
-        <p className="mt-6 text-center font-serif tracking-[0.35em] text-xs sm:text-sm text-ink/80 uppercase animate-floaty">
+        <p
+          className={`mt-6 text-center text-xs sm:text-sm text-ink/80 animate-floaty ${isAr ? "font-arabic" : "font-serif tracking-[0.35em] uppercase"}`}
+          style={fontStyle}
+        >
           {hint}
         </p>
       )}

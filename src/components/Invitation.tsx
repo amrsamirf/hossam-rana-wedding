@@ -1,26 +1,10 @@
 import { motion } from "framer-motion";
 import { Calendar, Heart, MapPin } from "lucide-react";
 import type { WeddingConfig } from "../config";
+import { translations, type Lang } from "../i18n";
 import Countdown from "./Countdown";
 
-type Props = Readonly<{ wedding: WeddingConfig }>;
-
-const MONTHS = [
-  "JANUARY",
-  "FEBRUARY",
-  "MARCH",
-  "APRIL",
-  "MAY",
-  "JUNE",
-  "JULY",
-  "AUGUST",
-  "SEPTEMBER",
-  "OCTOBER",
-  "NOVEMBER",
-  "DECEMBER",
-];
-
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+type Props = Readonly<{ wedding: WeddingConfig; lang: Lang }>;
 
 function buildWeekStrip(date: Date) {
   // build a Sun..Sat strip that contains the wedding date
@@ -43,7 +27,7 @@ function downloadIcs(w: WeddingConfig) {
       .replace(/[-:]/g, "")
       .replace(/\.\d{3}/, "");
   const start = w.date;
-  const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
+  const end = new Date(start.getTime() + 5 * 60 * 60 * 1000);
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -70,9 +54,21 @@ function downloadIcs(w: WeddingConfig) {
   URL.revokeObjectURL(url);
 }
 
-export default function Invitation({ wedding }: Props) {
+export default function Invitation({ wedding, lang }: Props) {
+  const tr = translations[lang];
+  const isAr = lang === "ar";
+  const arabicStyle = isAr ? { fontFamily: "'Amiri', serif" } : undefined;
+
   const { days, highlightIndex } = buildWeekStrip(wedding.date);
-  const monthLabel = MONTHS[wedding.date.getMonth()];
+  const monthLabel = tr.months[wedding.date.getMonth()];
+  const dayLabels = tr.dayLabels;
+
+  const groom = isAr ? wedding.groomAr : wedding.groom;
+  const bride = isAr ? wedding.brideAr : wedding.bride;
+  const dateLabel = isAr ? wedding.dateLabelAr : wedding.dateLabel;
+  const timeLabel = isAr ? wedding.timeLabelAr : wedding.timeLabel;
+  const venueName = isAr ? wedding.venueNameAr : wedding.venueName;
+  const venueAddress = isAr ? wedding.venueAddressAr : wedding.venueAddress;
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.98 },
@@ -99,15 +95,21 @@ export default function Invitation({ wedding }: Props) {
       {/* faint inner border */}
       <div className="pointer-events-none absolute inset-2 rounded-[2px] border border-gold/20" />
 
-      <div className="relative px-6 sm:px-10 py-10 sm:py-12 text-center text-ink">
-        <motion.p variants={item} className="font-serif tracking-[0.45em] text-[11px] sm:text-xs text-ink/80">
+      <div
+        className="relative px-6 sm:px-10 py-10 sm:py-12 text-center text-ink"
+        style={arabicStyle}
+      >
+        <motion.p
+          variants={item}
+          className={`text-[11px] sm:text-xs text-ink/80 ${isAr ? "font-arabic" : "font-serif tracking-[0.45em]"}`}
+        >
           {monthLabel}
         </motion.p>
 
         {/* Calendar strip */}
         <motion.div variants={item} className="mt-4 grid grid-cols-7 gap-1 sm:gap-2 max-w-md mx-auto">
-          {DAY_LABELS.map((d) => (
-            <div key={d} className="font-serif italic text-[11px] sm:text-xs text-ink/70">
+          {dayLabels.map((d) => (
+            <div key={d} className={`text-[11px] sm:text-xs text-ink/70 ${isAr ? "font-arabic" : "font-serif italic"}`}>
               {d}
             </div>
           ))}
@@ -142,30 +144,36 @@ export default function Invitation({ wedding }: Props) {
           />
         </motion.div>
 
-        <motion.h2 variants={item} className="mt-6 font-script text-5xl sm:text-6xl text-ink">
-          save the date
-        </motion.h2>
+        {isAr ? (
+          <motion.h2 variants={item} className="mt-6 font-arabic text-4xl sm:text-5xl text-ink" style={{ fontStyle: "italic" }}>
+            {tr.saveTheDate}
+          </motion.h2>
+        ) : (
+          <motion.h2 variants={item} className="mt-6 font-script text-5xl sm:text-6xl text-ink">
+            {tr.saveTheDate}
+          </motion.h2>
+        )}
 
         <motion.p
           variants={item}
-          className="mt-4 font-serif tracking-[0.4em] text-[10px] sm:text-xs text-ink/80"
+          className={`mt-4 text-[10px] sm:text-xs text-ink/80 ${isAr ? "font-arabic" : "font-serif tracking-[0.4em]"}`}
         >
-          FOR THE WEDDING OF
+          {tr.forTheWeddingOf}
         </motion.p>
 
         <motion.h1
           variants={item}
-          className="mt-2 font-serif tracking-[0.25em] text-2xl sm:text-3xl text-ink"
+          className={`mt-2 text-2xl sm:text-3xl text-ink ${isAr ? "font-arabic" : "font-serif tracking-[0.25em]"}`}
         >
-          {wedding.groom.toUpperCase()} <span className="text-gold">&amp;</span>{" "}
-          {wedding.bride.toUpperCase()}
+          {isAr ? groom : groom.toUpperCase()}{" "}<span className="text-gold">&amp;</span>{" "}
+          {isAr ? bride : bride.toUpperCase()}
         </motion.h1>
 
         <motion.p
           variants={item}
-          className="mt-3 font-serif tracking-[0.3em] text-[10px] sm:text-xs text-ink/85"
+          className={`mt-3 text-[10px] sm:text-xs text-ink/85 ${isAr ? "font-arabic" : "font-serif tracking-[0.3em]"}`}
         >
-          {wedding.dateLabel.toUpperCase()}
+          {isAr ? dateLabel : dateLabel.toUpperCase()}
         </motion.p>
 
         {/* Venue */}
@@ -180,7 +188,7 @@ export default function Invitation({ wedding }: Props) {
             className="inline-flex items-center gap-2 hover:text-gold transition-colors"
           >
             <MapPin size={14} className="text-gold" />
-            <span>{wedding.venueName}</span>
+            <span>{venueName}</span>
           </a>
           <a
             href={wedding.venueMapUrl}
@@ -188,10 +196,18 @@ export default function Invitation({ wedding }: Props) {
             rel="noopener noreferrer"
             className="text-ink/75 text-xs hover:text-gold underline-offset-2 hover:underline"
           >
-            {wedding.venueAddress}
+            {venueAddress}
           </a>
-          <div className="text-ink/75 text-xs">{wedding.timeLabel}</div>
+          <div className="text-ink/75 text-xs">{timeLabel}</div>
         </motion.div>
+
+        {/* Kids note */}
+        <motion.p
+          variants={item}
+          className={`mt-5 text-xs sm:text-sm text-ink/70 italic ${isAr ? "font-arabic" : "font-serif"}`}
+        >
+          ✦ {tr.kidsNote} ✦
+        </motion.p>
 
         {/* divider */}
         <motion.div variants={item} className="mt-7 flex items-center justify-center gap-3">
@@ -202,10 +218,10 @@ export default function Invitation({ wedding }: Props) {
 
         {/* Countdown */}
         <motion.div variants={item} className="mt-6">
-          <p className="font-serif tracking-[0.35em] text-[10px] sm:text-xs text-ink/75 mb-3">
-            COUNTING DOWN
+          <p className={`text-[10px] sm:text-xs text-ink/75 mb-3 ${isAr ? "font-arabic" : "font-serif tracking-[0.35em]"}`}>
+            {tr.countingDown}
           </p>
-          <Countdown target={wedding.date} />
+          <Countdown target={wedding.date} lang={lang} />
         </motion.div>
 
         {/* CTA */}
@@ -213,10 +229,10 @@ export default function Invitation({ wedding }: Props) {
           <button
             type="button"
             onClick={() => downloadIcs(wedding)}
-            className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-ivory/70 px-5 py-2 font-serif tracking-[0.2em] text-xs text-ink hover:bg-gold hover:text-ivory transition-colors"
+            className={`inline-flex items-center gap-2 rounded-full border border-gold/50 bg-ivory/70 px-5 py-2 text-xs text-ink hover:bg-gold hover:text-ivory transition-colors ${isAr ? "font-arabic" : "font-serif tracking-[0.2em]"}`}
           >
             <Calendar size={14} />
-            ADD TO CALENDAR
+            {tr.addToCalendar}
           </button>
         </motion.div>
       </div>
